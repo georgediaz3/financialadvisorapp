@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYI Finance</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
+    <style>
+        * { font-family: "Inter", sans-serif; }
+        .highlighted-section { outline: 2px solid #3F20FB; background-color: rgba(63, 32, 251, 0.1); }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+</head>
+<script>
+    async function loadSP500Chart() {
+    try {
+        console.log("Fetching data from API...");
+        const response = await fetch('/api/market-overview');
+        if (!response.ok) throw new Error("Failed to fetch data from the API");
+
+        const data = await response.json();
+        console.log("API Data:", data);
+
+        if (!data.prices || !data.timestamps) {
+            throw new Error("Missing prices or timestamps in the API response");
+        }
+
+        const chartOptions = {
+            chart: { type: 'line', height: 300 },
+            series: [
+                {
+                    name: 'S&P 500 (Daily)',
+                    data: data.prices.map((price, index) => ({
+                        x: data.timestamps[index],
+                        y: price
+                    }))
+                }
+            ],
+            xaxis: {
+                type: 'datetime',
+                categories: data.timestamps,
+                labels: { rotate: -45, format: 'MMM dd' }
+            },
+            yaxis: {
+                labels: { formatter: (value) => `$${value.toFixed(2)}` }
+            },
+            tooltip: {
+                x: { format: 'MMM dd, yyyy' },
+                y: { formatter: (value) => `$${value.toFixed(2)}` }
+            }
+        };
+
+        const chartElement = document.querySelector("#sp500-chart");
+        if (!chartElement) throw new Error("Chart container not found");
+
+        const chart = new ApexCharts(chartElement, chartOptions);
+        chart.render();
+        console.log("Chart rendered successfully.");
+    } catch (error) {
+        console.error("Error rendering chart:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", loadSP500Chart);
+
+
+</script>
+
+    
+    <html>
+              
+    <head>
+      <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script>
+          window.FontAwesomeConfig = {
+              autoReplaceSvg: 'nest', // Options: 'nest', 'remove', 'replace'
+          };
+      </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+      tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                // Default Tailwind colors
+                transparent: 'transparent',
+                current: 'currentColor',
+                black: '#000000',
+                white: '#ffffff',
+                gray: {
+                  50: '#f9fafb',
+                  100: '#f3f4f6',
+                  200: '#e5e7eb',
+                  300: '#d1d5db',
+                  400: '#9ca3af',
+                  500: '#6b7280',
+                  600: '#4b5563',
+                  700: '#374151',
+                  800: '#1f2937',
+                  900: '#111827',
+                },
+                red: {
+                  50: '#fef2f2',
+                  100: '#fee2e2',
+                  200: '#fecaca',
+                  300: '#fca5a5',
+                  400: '#f87171',
+                  500: '#ef4444',
+                  600: '#dc2626',
+                  700: '#b91c1c',
+                  800: '#991b1b',
+                  900: '#7f1d1d',
+                },
+                yellow: {
+                  50: '#fffbeb',
+                  100: '#fef3c7',
+                  200: '#fde68a',
+                  300: '#fcd34d',
+                  400: '#fbbf24',
+                  500: '#f59e0b',
+                  600: '#d97706',
+                  700: '#b45309',
+                  800: '#92400e',
+                  900: '#78350f',
+                },
+                green: {
+                  50: '#ecfdf5',
+                  100: '#d1fae5',
+                  200: '#a7f3d0',
+                  300: '#6ee7b7',
+                  400: '#34d399',
+                  500: '#10b981',
+                  600: '#059669',
+                  700: '#047857',
+                  800: '#065f46',
+                  900: '#064e3b',
+                },
+                blue: {
+                  50: '#eff6ff',
+                  100: '#dbeafe',
+                  200: '#bfdbfe',
+                  300: '#93c5fd',
+                  400: '#60a5fa',
+                  500: '#3b82f6',
+                  600: '#2563eb',
+                  700: '#1d4ed8',
+                  800: '#1e40af',
+                  900: '#1e3a8a',
+                },
+                indigo: {
+                  50: '#eef2ff',
+                  100: '#e0e7ff',
+                  200: '#c7d2fe',
+                  300: '#a5b4fc',
+                  400: '#818cf8',
+                  500: '#6366f1',
+                  600: '#4f46e5',
+                  700: '#4338ca',
+                  800: '#3730a3',
+                  900: '#312e81',
+                },
+                purple: {
+                  50: '#f5f3ff',
+                  100: '#ede9fe',
+                  200: '#ddd6fe',
+                  300: '#c4b5fd',
+                  400: '#a78bfa',
+                  500: '#8b5cf6',
+                  600: '#7c3aed',
+                  700: '#6d28d9',
+                  800: '#5b21b6',
+                  900: '#4c1d95',
+                },
+                pink: {
+                  50: '#fdf2f8',
+                  100: '#fce7f3',
+                  200: '#fbcfe8',
+                  300: '#f9a8d4',
+                  400: '#f472b6',
+                  500: '#ec4899',
+                  600: '#db2777',
+                  700: '#be185d',
+                  800: '#9d174d',
+                  900: '#831843',
+                },
+
+                // Custom color schemes
+                base: {
+                  DEFAULT: 'var(--color-base)',
+                  50: 'var(--color-base-50)',
+                  100: 'var(--color-base-100)',
+                  200: 'var(--color-base-200)',
+                  300: 'var(--color-base-300)',
+                  400: 'var(--color-base-400)',
+                  500: 'var(--color-base-500)',
+                  600: 'var(--color-base-600)',
+                  700: 'var(--color-base-700)',
+                  800: 'var(--color-base-800)',
+                  900: 'var(--color-base-900)',
+                  content: 'var(--color-base-content)',
+                },
+                primary: {
+                  DEFAULT: 'var(--color-primary)',
+                  50: 'var(--color-primary-50)',
+                  100: 'var(--color-primary-100)',
+                  200: 'var(--color-primary-200)',
+                  300: 'var(--color-primary-300)',
+                  400: 'var(--color-primary-400)',
+                  500: 'var(--color-primary-500)',
+                  600: 'var(--color-primary-600)',
+                  700: 'var(--color-primary-700)',
+                  800: 'var(--color-primary-800)',
+                  900: 'var(--color-primary-900)',
+                  focus: 'var(--color-primary-focus)',
+                  content: 'var(--color-primary-content)',
+                },
+                secondary: {
+                  DEFAULT: 'var(--color-secondary)',
+                  50: 'var(--color-secondary-50)',
+                  100: 'var(--color-secondary-100)',
+                  200: 'var(--color-secondary-200)',
+                  300: 'var(--color-secondary-300)',
+                  400: 'var(--color-secondary-400)',
+                  500: 'var(--color-secondary-500)',
+                  600: 'var(--color-secondary-600)',
+                  700: 'var(--color-secondary-700)',
+                  800: 'var(--color-secondary-800)',
+                  900: 'var(--color-secondary-900)',
+                  focus: 'var(--color-secondary-focus)',
+                  content: 'var(--color-secondary-content)',
+                },
+                accent: {
+                  DEFAULT: 'var(--color-accent)',
+                  50: 'var(--color-accent-50)',
+                  100: 'var(--color-accent-100)',
+                  200: 'var(--color-accent-200)',
+                  300: 'var(--color-accent-300)',
+                  400: 'var(--color-accent-400)',
+                  500: 'var(--color-accent-500)',
+                  600: 'var(--color-accent-600)',
+                  700: 'var(--color-accent-700)',
+                  800: 'var(--color-accent-800)',
+                  900: 'var(--color-accent-900)',
+                  focus: 'var(--color-accent-focus)',
+                  content: 'var(--color-accent-content)',
+                },
+                neutral: {
+                  DEFAULT: 'var(--color-neutral)',
+                  50: 'var(--color-neutral-50)',
+                  100: 'var(--color-neutral-100)',
+                  200: 'var(--color-neutral-200)',
+                  300: 'var(--color-neutral-300)',
+                  400: 'var(--color-neutral-400)',
+                  500: 'var(--color-neutral-500)',
+                  600: 'var(--color-neutral-600)',
+                  700: 'var(--color-neutral-700)',
+                  800: 'var(--color-neutral-800)',
+                  900: 'var(--color-neutral-900)',
+                  focus: 'var(--color-neutral-focus)',
+                  content: 'var(--color-neutral-content)',
+                },
+                info: {
+                  DEFAULT: 'var(--color-info)',
+                  50: 'var(--color-info-50)',
+                  100: 'var(--color-info-100)',
+                  200: 'var(--color-info-200)',
+                  300: 'var(--color-info-300)',
+                  400: 'var(--color-info-400)',
+                  500: 'var(--color-info-500)',
+                  600: 'var(--color-info-600)',
+                  700: 'var(--color-info-700)',
+                  800: 'var(--color-info-800)',
+                  900: 'var(--color-info-900)',
+                  focus: 'var(--color-info-focus)',
+                  content: 'var(--color-info-content)',
+                },
+                success: {
+                  DEFAULT: 'var(--color-success)',
+                  50: 'var(--color-success-50)',
+                  100: 'var(--color-success-100)',
+                  200: 'var(--color-success-200)',
+                  300: 'var(--color-success-300)',
+                  400: 'var(--color-success-400)',
+                  500: 'var(--color-success-500)',
+                  600: 'var(--color-success-600)',
+                  700: 'var(--color-success-700)',
+                  800: 'var(--color-success-800)',
+                  900: 'var(--color-success-900)',
+                  focus: 'var(--color-success-focus)',
+                  content: 'var(--color-success-content)',
+                },
+                warning: {
+                  DEFAULT: 'var(--color-warning)',
+                  50: 'var(--color-warning-50)',
+                  100: 'var(--color-warning-100)',
+                  200: 'var(--color-warning-200)',
+                  300: 'var(--color-warning-300)',
+                  400: 'var(--color-warning-400)',
+                  500: 'var(--color-warning-500)',
+                  600: 'var(--color-warning-600)',
+                  700: 'var(--color-warning-700)',
+                  800: 'var(--color-warning-800)',
+                  900: 'var(--color-warning-900)',
+                  focus: 'var(--color-warning-focus)',
+                  content: 'var(--color-warning-content)',
+                },
+                error: {
+                  DEFAULT: 'var(--color-error)',
+                  50: 'var(--color-error-50)',
+                  100: 'var(--color-error-100)',
+                  200: 'var(--color-error-200)',
+                  300: 'var(--color-error-300)',
+                  400: 'var(--color-error-400)',
+                  500: 'var(--color-error-500)',
+                  600: 'var(--color-error-600)',
+                  700: 'var(--color-error-700)',
+                  800: 'var(--color-error-800)',
+                  900: 'var(--color-error-900)',
+                  focus: 'var(--color-error-focus)',
+                  content: 'var(--color-error-content)',
+                },
+                // Aliases
+                danger:  {
+                  DEFAULT: 'var(--color-error)',
+                  50: 'var(--color-error-50)',
+                  100: 'var(--color-error-100)',
+                  200: 'var(--color-error-200)',
+                  300: 'var(--color-error-300)',
+                  400: 'var(--color-error-400)',
+                  500: 'var(--color-error-500)',
+                  600: 'var(--color-error-600)',
+                  700: 'var(--color-error-700)',
+                  800: 'var(--color-error-800)',
+                  900: 'var(--color-error-900)',
+                  focus: 'var(--color-error-focus)',
+                  content: 'var(--color-error-content)',
+                },
+                failure:  {
+                  DEFAULT: 'var(--color-error)',
+                  50: 'var(--color-error-50)',
+                  100: 'var(--color-error-100)',
+                  200: 'var(--color-error-200)',
+                  300: 'var(--color-error-300)',
+                  400: 'var(--color-error-400)',
+                  500: 'var(--color-error-500)',
+                  600: 'var(--color-error-600)',
+                  700: 'var(--color-error-700)',
+                  800: 'var(--color-error-800)',
+                  900: 'var(--color-error-900)',
+                  focus: 'var(--color-error-focus)',
+                  content: 'var(--color-error-content)',
+                },
+              },
+            },
+          },
+          variants: {
+            extend: {
+              backgroundColor: ['active', 'group-hover'],
+              textColor: ['active', 'group-hover'],
+            },
+          },
+          plugins: [],
+        };
+
+    </script>
+    </head>
+            <body class="h-full text-base-content">
+              <div id="root" class="min-h-screen bg-neutral-50">
+<header id="header" class="fixed w-full bg-white border-b border-neutral-200 z-50">
+  <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <i class="fa-solid fa-coins text-2xl text-neutral-800"></i>
+      <span class="text-xl font-bold">FYI</span>
+    </div>
+    <div class="hidden md:flex space-x-6">
+      <a href="#" class="flex items-center space-x-1 text-neutral-600 hover:text-neutral-900">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Markets</span>
+      </a>
+      <a href="#" class="flex items-center space-x-1 text-neutral-600 hover:text-neutral-900">
+        <i class="fa-solid fa-calculator"></i>
+        <span>Tools</span>
+      </a>
+      <a href="#" class="flex items-center space-x-1 text-neutral-600 hover:text-neutral-900">
+        <i class="fa-solid fa-piggy-bank"></i>
+        <span>Planning</span>
+      </a>
+      <a href="#" class="flex items-center space-x-1 text-neutral-600 hover:text-neutral-900">
+        <i class="fa-solid fa-robot"></i>
+        <span>AI Assistant</span>
+      </a>
+    </div>
+    <div class="flex items-center space-x-4">
+      <button class="px-4 py-2 rounded-lg bg-neutral-800 text-white">Sign In</button>
+      <button class="md:hidden">
+        <i class="fa-solid fa-bars text-2xl"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<section id="hero" class="pt-20 h-[600px] bg-neutral-100">
+  <div class="container mx-auto px-4 py-16">
+    <div class="max-w-3xl">
+      <h1 class="text-5xl font-bold mb-6">Master Your Finances with Confidence</h1>
+      <p class="text-xl text-neutral-600 mb-8">Your personal guide to financial literacy, smart investing, and secure retirement planning.</p>
+      <div class="flex space-x-4">
+        <button class="px-6 py-3 bg-neutral-800 text-white rounded-lg">Get Started</button>
+        <button class="px-6 py-3 border border-neutral-800 rounded-lg">Watch Demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="features" class="py-20 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="p-6 border rounded-xl">
+        <i class="fa-solid fa-chart-pie text-3xl mb-4"></i>
+        <h3 class="text-xl font-bold mb-3">Stock Market Insights</h3>
+        <p class="text-neutral-600">Real-time market data and analysis made simple for beginners.</p>
+      </div>
+      <div class="p-6 border rounded-xl">
+        <i class="fa-solid fa-wallet text-3xl mb-4"></i>
+        <h3 class="text-xl font-bold mb-3">Retirement Planning</h3>
+        <p class="text-neutral-600">Step-by-step guidance to secure your financial future.</p>
+      </div>
+      <div class="p-6 border rounded-xl">
+        <i class="fa-solid fa-robot text-3xl mb-4"></i>
+        <h3 class="text-xl font-bold mb-3">AI Financial Assistant</h3>
+        <p class="text-neutral-600">24/7 personalized support for your financial questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="market-overview" class="py-16 bg-neutral-50">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold mb-8">Market Overview</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+            <div id="sp500-chart" style="width: 100%; height: 300px;"></div>
+          <h3 class="text-xl font-bold mb-2">S&P 500 Performance</h3>
+          <p class="text-neutral-600">Daily market analysis and trends</p>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm">
+              <div class="flex justify-between items-center">
+                <span class="font-bold">NASDAQ</span>
+                <span class="text-neutral-800">14,893.24</span>
+                <span class="text-neutral-600">+1.24%</span>
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm">
+              <div class="flex justify-between items-center">
+                <span class="font-bold">DOW</span>
+                <span class="text-neutral-800">35,677.02</span>
+                <span class="text-neutral-600">+0.89%</span>
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm">
+              <div class="flex justify-between items-center">
+                <span class="font-bold">FTSE 100</span>
+                <span class="text-neutral-800">7,234.56</span>
+                <span class="text-neutral-600">+0.45%</span>
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">FTSE 100</span>
+                  <span class="text-neutral-800">7,234.56</span>
+                  <span class="text-neutral-600">+0.45%</span>
+                </div>
+              </div>
+              <div class="bg-white p-4 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">FTSE 100</span>
+                  <span class="text-neutral-800">7,234.56</span>
+                  <span class="text-neutral-600">+0.45%</span>
+                </div>
+              </div>
+              <div class="bg-white p-4 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">FTSE 100</span>
+                  <span class="text-neutral-800">7,234.56</span>
+                  <span class="text-neutral-600">+0.45%</span>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+</section>  
+<section id="chatbot" class="fixed bottom-4 right-4 z-50">
+  <button class="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center shadow-lg">
+    <i class="fa-solid fa-message text-white text-2xl"></i>
+  </button>
+</section>
+<footer id="footer" class="bg-neutral-800 text-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="grid md:grid-cols-4 gap-8">
+      <div>
+        <h4 class="text-lg font-bold mb-4">Like You</h4>
+        <p class="text-neutral-400">Your trusted partner in financial literacy</p>
+      </div>
+      <div>
+        <h4 class="text-lg font-bold mb-4">Resources</h4>
+        <ul class="space-y-2">
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">Blog</span></li>
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">Guides</span></li>
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">Calculator</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-lg font-bold mb-4">Company</h4>
+        <ul class="space-y-2">
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">About</span></li>
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">Careers</span></li>
+          <li><span  class="text-neutral-400 hover:text-white cursor-pointer">Contact</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-lg font-bold mb-4">Follow Us</h4>
+        <div class="flex space-x-4">
+          <a href="#" class="text-neutral-400 hover:text-white">
+            <i class="fa-brands fa-twitter text-xl"></i>
+          </a>
+          <a href="#" class="text-neutral-400 hover:text-white">
+            <i class="fa-brands fa-linkedin text-xl"></i>
+          </a>
+          <a href="#" class="text-neutral-400 hover:text-white">
+            <i class="fa-brands fa-facebook text-xl"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-neutral-700 mt-8 pt-8 text-center text-neutral-400">
+      <p>&copy; 2025 Like You. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+</div>
+            </body>
+          </html>
+        
+</body>
+</html>
